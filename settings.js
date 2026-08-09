@@ -1,7 +1,7 @@
 var DOSWASMSETTINGS = {
     CLOUDSAVEURL: "",
     ISOURL: "",
-    DEFAULTIMG: "hdd.img"
+    DEFAULTIMG: "hdd.zip"
 }
 
 var rando = Math.floor(Math.random() * Math.floor(100000));

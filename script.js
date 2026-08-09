@@ -1,3 +1,4 @@
+
 var AUDIOBUFFSIZE = 1024;
 
 const SaveTypes = {
@@ -1001,8 +1002,8 @@ class MyClass {
 
     async loadRom(noIso) {
         
-        this.initAudio();
-        
+        //disable audio for now because it causes issues on some browsers
+        //this.initAudio();
 
         if (noIso)
         {
@@ -1153,6 +1154,14 @@ class MyClass {
 
         //check cache
         let cleanPath = path.substr(path.lastIndexOf('/')+1);
+
+        var isZip = cleanPath.endsWith('.zip');
+
+        if (isZip)
+        {
+            cleanPath = cleanPath.replace(".zip",".img");
+        }
+
         if (cleanPath.endsWith('.img'))
         {
             let baseImageName = cleanPath.replace(".img",".baseimage");
@@ -1162,6 +1171,7 @@ class MyClass {
                 return;
             }
         }
+
         if (cleanPath.endsWith('.iso'))
         {
             if (myClass.dblistIsos.includes(cleanPath))
@@ -1170,6 +1180,8 @@ class MyClass {
                 return;
             }
         }
+
+        console.log('loading ' + path + ' from network');
 
         this.showProgress = true;
 
@@ -1192,6 +1204,7 @@ class MyClass {
             document.getElementById('myProgress').style.width= percent + '%';
             document.getElementById('myProgress').innerHTML = formatted;
         };
+
         req.onload = function (e) {
             console.log('request loaded',e,req);
             var arrayBuffer = req.response; // Note: not oReq.responseText
@@ -1207,7 +1220,28 @@ class MyClass {
                 }
                 else if (arrayBuffer) {
                     var byteArray = new Uint8Array(arrayBuffer);
-                    myClass.LoadEmulator(byteArray);
+
+                    if (isZip) {
+                        const allFiles = fflate.unzipSync(byteArray);
+                        const names = Object.keys(allFiles);
+  
+                        if (names.length != 0) {
+                            byteArray = allFiles[names[0]];
+                            console.log('Decompressed!', byteArray.length);
+                        }
+                    } 
+
+
+                    (function wait_for_init() {
+                        setTimeout(() => {
+                            console.log('WAITING!!!', myClass.loading);
+                            if (myClass.loading) wait_for_init();
+                            else myClass.LoadEmulator(byteArray);
+
+                        }, 1000);
+                    })();
+
+                    //myClass.LoadEmulator(byteArray);
                 }
                 else{
                     this.lblError = 'Error downloading data. Try reloading browser.';
