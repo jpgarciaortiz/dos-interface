@@ -1196,10 +1196,18 @@ class MyClass {
             let total = event.total;
             let percent = (loaded / total)*100;
 
-            loaded = Math.ceil(loaded / 1000000);
+            /*loaded = Math.ceil(loaded / 1000000);
             total = Math.ceil(total / 1000000);
 
             let formatted = loaded + 'MB / ' + total + 'MB';
+            
+            document.getElementById('myProgress').style.width= percent + '%';
+            document.getElementById('myProgress').innerHTML = formatted;*/
+
+            loaded = Math.ceil(loaded / 1000);
+            total = Math.ceil(total / 1000);
+
+            let formatted = loaded + 'KB / ' + total + 'KB';
             
             document.getElementById('myProgress').style.width= percent + '%';
             document.getElementById('myProgress').innerHTML = formatted;
